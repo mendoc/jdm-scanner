@@ -1,0 +1,24 @@
+{
+  "name": "jdm-scanner",
+  "version": "1.0.0",
+  "description": "Une application permettant de scanner les badges des participants aux Journées Digitales de Moanda",
+  "main": "index.js",
+  "scripts": {
+    "serve": "netlify-lambda serve funcs -c webpack.functions.js",
+    "build": "netlify-lambda build funcs -c webpack.functions.js"
+  },
+  "repository": "https://github.com/mendoc/jdm-scanner.git",
+  "author": "Dimitri ONGOUA <ongouadimitri5@gmail.com>",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "axios": "^0.23.0",
+    "google-spreadsheet": "^3.3.0",
+    "uuid": "^8.3.0"
+  },
+  "devDependencies": {
+    "dotenv": "^8.2.0",
+    "netlify-lambda": "^2.0.1",
+    "webpack-node-externals": "^2.5.1"
+  }
+}
