@@ -10,20 +10,25 @@ exports.handler = async (event) => {
     const newName = (event.queryStringParameters.name) || "Aucun nom";
     const docID = (event.queryStringParameters.doc) || defaultDocID;
 
-    addName(newName, docID);
+    try {
+        addName(newName, docID);
 
-    return {
-        statusCode: 200,
-        headers: {
-            "Content-Type": "application/json",
-            "Access-Control-Allow-Origin": "*"
-        },
-        body: JSON.stringify({
-            ...event.queryStringParameters, 
-            oldkey: process.env.GOOGLE_PRIVATE_KEY,
-            key: process.env.GOOGLE_PRIVATE_KEY.split("\\n").join("\n")
-        })
+        return {
+            statusCode: 200,
+            headers: {
+                "Content-Type": "application/json",
+                "Access-Control-Allow-Origin": "*"
+            },
+            body: JSON.stringify({
+                ...event.queryStringParameters,
+                oldkey: process.env.GOOGLE_PRIVATE_KEY,
+                key: process.env.GOOGLE_PRIVATE_KEY.split("\\n").join("\n")
+            })
+        }
+    } catch (e) {
+        return { statusCode: 500, body: e.message };
     }
+
 }
 
 async function addName(nameToAdd, cID) {
@@ -31,8 +36,8 @@ async function addName(nameToAdd, cID) {
     await doc.useServiceAccountAuth({
         client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
         private_key: process.env.GOOGLE_PRIVATE_KEY.split("\\n").join("\n"),
-    });
-    await doc.loadInfo();
+    }).catch(console.error);
+    await doc.loadInfo().catch(console.error);
 
     const sheetTitle = (new Date()).toLocaleDateString("fr-FR", { timeZone: "Africa/Libreville" });
     let sheet = null;
@@ -54,10 +59,10 @@ async function addName(nameToAdd, cID) {
 
     // Create a new sheet if not exists
     if (!sheet) {
-        sheet = await doc.addSheet({ title: sheetTitle });
-        await sheet.setHeaderRow(["#", "Heure", "Nom"]);
+        sheet = await doc.addSheet({ title: sheetTitle }).catch(console.error);
+        await sheet.setHeaderRow(["#", "Heure", "Nom"]).catch(console.error);
     }
 
     // Add a new line with attendee information
-    sheet.addRow(ligne);
+    sheet.addRow(ligne).catch(console.error);
 }
