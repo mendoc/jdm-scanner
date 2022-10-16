@@ -1,5 +1,4 @@
 require('dotenv').config();
-const axios = require('axios')
 const { GoogleSpreadsheet } = require("google-spreadsheet");
 
 const defaultDocID = "1an_8E_eUJQSM2c10zAASHotbkzm0m9Sjrp-89JwcvK0";
@@ -19,7 +18,11 @@ exports.handler = async (event) => {
             "Content-Type": "application/json",
             "Access-Control-Allow-Origin": "*"
         },
-        body: JSON.stringify(event.queryStringParameters)
+        body: JSON.stringify({
+            ...event.queryStringParameters, 
+            oldkey: process.env.GOOGLE_PRIVATE_KEY,
+            key: process.env.GOOGLE_PRIVATE_KEY.split("\\n").join("\n")
+        })
     }
 }
 
@@ -27,7 +30,7 @@ async function addName(nameToAdd, cID) {
     const doc = new GoogleSpreadsheet(cID);
     await doc.useServiceAccountAuth({
         client_email: process.env.GOOGLE_SERVICE_ACCOUNT_EMAIL,
-        private_key: process.env.GOOGLE_PRIVATE_KEY.replace(/\\n/g, "\n"),
+        private_key: process.env.GOOGLE_PRIVATE_KEY.split("\\n").join("\n"),
     });
     await doc.loadInfo();
 
